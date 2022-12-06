@@ -1,31 +1,40 @@
 import * as React from 'react';
-
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StyleSheet, Text, View} from 'react-native';
+import {Product, RootStackParamList} from '../types';
 import {useCameraDevices} from 'react-native-vision-camera';
-import {runOnJS} from 'react-native-reanimated';
-import {useFrameProcessor} from 'react-native-vision-camera';
 import {Camera} from 'react-native-vision-camera';
-import {Barcode, scanBarcodes, BarcodeFormat} from 'vision-camera-code-scanner';
+import {useScanBarcodes, BarcodeFormat} from 'vision-camera-code-scanner';
+import {useGetCategories} from '../services/product.services';
+import {ProductContext} from '../context/Product.context';
 
-export default function App() {
+interface ScannerProps {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Scanner'>;
+}
+
+export default function Scanner({navigation}: ScannerProps) {
   const [hasPermission, setHasPermission] = React.useState(false);
-  const [barcodes, setBarcodes] = React.useState<Barcode[]>([]);
+  const [frameProcessor, barcodes] = useScanBarcodes([BarcodeFormat.CODE_128], {
+    checkInverted: true,
+  });
   const devices = useCameraDevices();
   const device = devices.back;
+  const {addProduct} = React.useContext(ProductContext);
+
+  const {data, isFetched} = useGetCategories(barcodes[0]?.displayValue);
 
   React.useEffect(() => {
-    if (barcodes.length > 0) {
-      console.log(barcodes);
+    if (barcodes.length > 0 && data && isFetched) {
+      const newProduct = {
+        name: data.product.generic_name,
+        image: data.product.image_front_small_url,
+        quantity: 1,
+        code: barcodes[0].displayValue,
+      } as unknown as Product;
+      addProduct(newProduct);
+      navigation.navigate('Home');
     }
-  }, [barcodes]);
-
-  const frameProcessor = useFrameProcessor(frame => {
-    'worklet';
-    const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], {
-      checkInverted: true,
-    });
-    runOnJS(setBarcodes)(detectedBarcodes);
-  }, []);
+  }, [barcodes, addProduct, data, isFetched, navigation]);
 
   React.useEffect(() => {
     (async () => {

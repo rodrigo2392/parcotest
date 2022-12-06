@@ -1,5 +1,7 @@
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+
+import {ProductContext} from '../context/Product.context';
 import {Product} from '../types';
 
 interface ItemProps {
@@ -7,18 +9,18 @@ interface ItemProps {
 }
 
 export default function QuantityControl({product}: ItemProps) {
-  const [, setValue] = useState(0);
+  const {addQuantity, removeQuantity} = useContext(ProductContext);
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.control}
-        onPress={() => setValue(prev => prev + 1)}>
+        onPress={() => addQuantity(product)}>
         <Text style={styles.text}>+</Text>
       </TouchableOpacity>
       <Text style={styles.text}>{product.quantity}</Text>
       <TouchableOpacity
         style={styles.control}
-        onPress={() => setValue(prev => (prev > 0 ? prev - 1 : 0))}>
+        onPress={() => removeQuantity(product)}>
         <Text style={styles.text}>-</Text>
       </TouchableOpacity>
     </View>

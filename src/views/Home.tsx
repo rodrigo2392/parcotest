@@ -18,7 +18,7 @@ export default function Home({navigation}: HomeProps) {
         <Text style={styles.titleText}>Lista de venta</Text>
       </View>
       {products?.map((product: Product) => (
-        <ProductItem product={product} />
+        <ProductItem product={product} key={product.code} />
       ))}
       {products?.length === 0 && (
         <View style={styles.noItemContainer}>

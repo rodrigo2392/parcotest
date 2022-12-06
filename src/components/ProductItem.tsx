@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import QuantityControl from './QuantityControl';
 import {Product} from '../types';
 
@@ -10,11 +10,13 @@ export default function ProductItem({product}: ItemProps) {
   return (
     <View style={styles.container}>
       <View style={styles.productContainer}>
-        <Text>{product.image}</Text>
+        <Image source={{uri: product.image}} style={styles.image} />
         <Text>{product.name}</Text>
         <QuantityControl product={product} />
       </View>
-      <Text>{product.code}</Text>
+      <View style={styles.code}>
+        <Text>code: {product.code}</Text>
+      </View>
     </View>
   );
 }
@@ -29,5 +31,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  image: {
+    width: 50,
+    height: 50,
+  },
+  code: {
+    alignItems: 'center',
   },
 });
