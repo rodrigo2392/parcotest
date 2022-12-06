@@ -1,16 +1,20 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import QuantityControl from './QuantityControl';
+import {Product} from '../types';
 
-export default function ProductItem() {
+interface ItemProps {
+  product: Product;
+}
+export default function ProductItem({product}: ItemProps) {
   return (
     <View style={styles.container}>
       <View style={styles.productContainer}>
-        <Text>Image</Text>
-        <Text>Product Item</Text>
-        <QuantityControl />
+        <Text>{product.image}</Text>
+        <Text>{product.name}</Text>
+        <QuantityControl product={product} />
       </View>
-      <Text>Barcode</Text>
+      <Text>{product.code}</Text>
     </View>
   );
 }

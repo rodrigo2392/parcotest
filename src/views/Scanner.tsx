@@ -13,6 +13,12 @@ export default function App() {
   const devices = useCameraDevices();
   const device = devices.back;
 
+  React.useEffect(() => {
+    if (barcodes.length > 0) {
+      console.log(barcodes);
+    }
+  }, [barcodes]);
+
   const frameProcessor = useFrameProcessor(frame => {
     'worklet';
     const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], {
