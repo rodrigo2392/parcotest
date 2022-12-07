@@ -1,5 +1,6 @@
 import React from 'react';
 import {ContextType, Product} from '../types';
+import {getData, storeData} from '../utils/localstorage';
 
 const contextDefaultValues: ContextType = {
   products: [],
@@ -27,7 +28,18 @@ interface ProviderProps {
 export default function ProductContextProvider({children}: ProviderProps) {
   const [products, setProducts] = React.useState<Product[] | undefined>([]);
 
-  const addProduct = (product: Product) => {
+  React.useEffect(() => {
+    async function getLocal() {
+      const values = (await getData()) as string;
+      if (values) {
+        setProducts(JSON.parse(values));
+      }
+    }
+
+    getLocal();
+  }, []);
+
+  const addProduct = async (product: Product) => {
     const found = products?.find(e => e.code === product.code);
     const cloneProducts = products ? [...products] : [];
 
@@ -39,9 +51,11 @@ export default function ProductContextProvider({children}: ProviderProps) {
       if (products) {
         const newList = [...products, product];
         setProducts(newList);
+        storeData(JSON.stringify(newList));
       } else {
         const newList = [product];
         setProducts(newList);
+        storeData(JSON.stringify(newList));
       }
     }
   };
@@ -54,6 +68,7 @@ export default function ProductContextProvider({children}: ProviderProps) {
     const filteredList = cloneProducts.filter(el => el.code !== product.code);
     const newList = [...filteredList, productClone];
     setProducts(newList);
+    storeData(JSON.stringify(newList));
   };
 
   const removeQuantity = (product: Product) => {
@@ -66,8 +81,10 @@ export default function ProductContextProvider({children}: ProviderProps) {
     if (newQuantity > 0) {
       const newList = [...filteredList, product];
       setProducts(newList);
+      storeData(JSON.stringify(newList));
     } else {
       setProducts(filteredList);
+      storeData(JSON.stringify(filteredList));
     }
   };
   return (
