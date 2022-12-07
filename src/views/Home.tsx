@@ -26,9 +26,16 @@ export default function Home({navigation}: HomeProps) {
         </View>
       )}
 
+      <View style={styles.scanButton}>
+        <Button
+          color="orange"
+          title="Escanear producto"
+          onPress={() => navigation.navigate('Scanner')}
+        />
+      </View>
       <View style={styles.addButton}>
         <Button
-          title="Agregar Producto"
+          title="Agregar Manualmente"
           onPress={() => navigation.navigate('AddProduct')}
         />
       </View>
@@ -52,6 +59,9 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  scanButton: {
+    marginTop: 50,
   },
   addButton: {
     marginTop: 20,

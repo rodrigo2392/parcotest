@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {Product, RootStackParamList} from '../types';
 import {useCameraDevices} from 'react-native-vision-camera';
 import {Camera} from 'react-native-vision-camera';
@@ -21,7 +21,7 @@ export default function Scanner({navigation}: ScannerProps) {
   const device = devices.back;
   const {addProduct} = React.useContext(ProductContext);
 
-  const {data, isFetched} = useGetCategories(barcodes[0]?.displayValue);
+  const {data, isFetched, error} = useGetCategories(barcodes[0]?.displayValue);
 
   React.useEffect(() => {
     if (barcodes.length > 0 && data && isFetched) {
@@ -33,8 +33,14 @@ export default function Scanner({navigation}: ScannerProps) {
       } as unknown as Product;
       addProduct(newProduct);
       navigation.navigate('Home');
+    } else if (
+      error ||
+      data?.status_verbose === 'no code or invalid code' ||
+      data?.status_verbose === 'product not found'
+    ) {
+      Alert.alert('Error', 'El producto no fue encontrado, revisa el código.');
     }
-  }, [barcodes, addProduct, data, isFetched, navigation]);
+  }, [barcodes, addProduct, data, isFetched, navigation, error]);
 
   React.useEffect(() => {
     (async () => {
